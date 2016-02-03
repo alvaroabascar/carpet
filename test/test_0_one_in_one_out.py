@@ -28,6 +28,24 @@ def create_dummy_file():
 
 PutsHello = carpet.create_context_class(puts_hello_into_file)
 
+def test_base_class_creates_tmp_file():
+    extension = ".nii"
+    with carpet.TempFile(file_extension=extension) as tmp_file:
+        assert os.path.isfile(tmp_file)
+
+def test_base_class_deletes_tmp_file():
+    with carpet.TempFile() as tmp_file:
+        pass
+    assert not os.path.exists(tmp_file)
+
+def test_base_class_creates_right_extension():
+    extension = ".nii"
+    with carpet.TempFile(file_extension=extension) as tmp_file:
+        assert tmp_file.endswith(extension)
+
+def test_base_class_doesnt_remove_when_asked():
+    with carpet.TempFile(
+
 def test_creates_tmp_file():
     dummy_file = create_dummy_file()
     with PutsHello(dummy_file) as tmp_file:

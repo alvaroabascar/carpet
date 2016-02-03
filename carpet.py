@@ -36,7 +36,7 @@ class TempFileContext:
     def remove_intermediate_files(self):
         map(os.remove, self.removable_files)
 
-def create_context_class(core_function):
+def create_context_class(core_function, output_extension=""):
     """
     This function is used to create context classes using a function
     (core_function) to provide some functionality.
@@ -74,7 +74,7 @@ def create_context_class(core_function):
         def __init__(self, *args, **kwargs):
             self.removable_files = []
 
-            self.tempfile = tempfile.mktemp()
+            self.tempfile = tempfile.mktemp() + "." + output_extension
             core_function(args[0], self.tempfile, *args[1:], **kwargs)
             self.remove_at_exit = True
 

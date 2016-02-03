@@ -1,2 +1,7 @@
 .cache
 **/__pycache__
+.coverage
+htmlcov/
+test/.coverage
+test/htmlcov/
+test/run_tests.sh

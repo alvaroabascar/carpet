@@ -2,8 +2,8 @@ import tempfile
 import os
 
 class TempFileContext:
-    remove_at_exit = True
     removable_files = []
+
     """
     Base class to create 'with' contexts.
 
@@ -14,7 +14,8 @@ class TempFileContext:
         - self.tempfile <string>. Temporary file of interest, returned by "with" statement.
     """
 
-    def __init__(self, file_extension=""):
+    def __init__(self, file_extension="", remove_at_exit=True):
+        self.remove_at_exit = remove_at_exit
         self.tempfile = tempfile.mktemp() + file_extension
 
     def __enter__(self):
@@ -36,7 +37,7 @@ class TempFileContext:
     def remove_intermediate_files(self):
         map(os.remove, self.removable_files)
 
-def create_context_class(core_function, output_extension):
+def create_context_class(core_function, output_extension=""):
     """
     Creates a context class, which implements the functionality provided
     by the function core_function.
@@ -62,10 +63,14 @@ def create_context_class(core_function, output_extension):
     class GenericContextClass(TempFileContext):
 
         def __init__(self, *args, **kwargs):
+            if 'remove_at_exit' in kwargs:
+                self.remove_at_exit = kwargs['remove_at_exit']
+                kwargs.pop('remove_at_exit', None)
+            else:
+                self.remove_at_exit = True
             self.removable_files = []
 
             self.tempfile = tempfile.mktemp() + get_extension(args[0])
             core_function(args[0], self.tempfile, *args[1:], **kwargs)
-            self.remove_at_exit = True
 
     return GenericContextClass

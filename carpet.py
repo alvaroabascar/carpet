@@ -2,6 +2,7 @@ import tempfile
 import os
 
 class TempFileContext:
+    remove_at_exit = True
     removable_files = []
 
     """
@@ -70,7 +71,10 @@ def create_context_class(core_function, output_extension=""):
                 self.remove_at_exit = True
             self.removable_files = []
 
-            self.tempfile = tempfile.mktemp() + get_extension(args[0])
+            extension = get_extension(args[0])
+            if extension:
+                extension = "." + extension
+            self.tempfile = tempfile.mktemp() + extension
             core_function(args[0], self.tempfile, *args[1:], **kwargs)
 
     return GenericContextClass

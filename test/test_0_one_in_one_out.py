@@ -18,8 +18,8 @@ def puts_hello_into_file(file_in, file_out):
     with open(file_out, "w") as fo:
         fo.write(content)
 
-def create_dummy_file():
-    tmp = tempfile.mktemp()
+def create_dummy_file(extension=""):
+    tmp = tempfile.mktemp() + extension
     with open(tmp, "w") as tf:
         tf.write("hello!")
     return tmp
@@ -28,10 +28,15 @@ def create_dummy_file():
 
 PutsHello = carpet.create_context_class(puts_hello_into_file)
 
-def test_base_class_creates_right_extension():
+### Tests again TempFileContext ###
+
+def test_base_class_right_extension_string():
     extension = ".nii"
-    with carpet.TempFileContext(file_extension=extension, remove_at_exit=False) as tmp_file:
+    with carpet.TempFileContext(file_extension=extension, remove_at_exit=False)\
+         as tmp_file:
         assert tmp_file.endswith(extension)
+
+### Tests against simple context classes ###
 
 def test_creates_tmp_file():
     dummy_file = create_dummy_file()
@@ -60,3 +65,20 @@ def test_functionality_is_conserved():
     with PutsHello(fname_in) as tmp_file_hello:
         with open(fname_out_fn) as fh, open(tmp_file_hello) as ftmp:
             assert fh.read() == ftmp.read()
+
+def test_right_extension_string():
+    PutsHelloExtension = carpet.create_context_class(puts_hello_into_file,
+            output_extension=".hello")
+    dummy = create_dummy_file()
+    with PutsHelloExtension(dummy) as temp_file:
+        assert temp_file.endswith(".hello")
+
+def test_right_extension_function():
+    # creates same extension as input file
+    create_extension = lambda filein: filein.split('.')[-1]
+    PutsHelloExtension = carpet.create_context_class(puts_hello_into_file,
+            output_extension=create_extension)
+    dummy = create_dummy_file(extension=".pepe")
+
+    with PutsHelloExtension(dummy) as temp_file:
+        assert temp_file.endswith(".pepe")

@@ -36,37 +36,27 @@ class TempFileContext:
     def remove_intermediate_files(self):
         map(os.remove, self.removable_files)
 
-def create_context_class(core_function, output_extension=""):
+def create_context_class(core_function, output_extension):
     """
-    This function is used to create context classes using a function
-    (core_function) to provide some functionality.
-
-    By context class I mean classes that can be used like this:
-        with ContextClass(whatever) as something:
-            do whatever with "something"
-    where "something" is only available within the scope of the with block.
-
-    core_function must accept at least two arguments:
-        - input file -> input file to process
-        - output fila -> output file of the processing
-
-    A typical example of core_function will be a function that transforms
-    between two data formats. For example, say we have a function jpg2png.
-    Normally we would use it this way: jpg2png("photo.jpg", "photo.png"). Now
-    suppose that we only need "photo.png" for a temporal step in a pipeline. In
-    this case we would have to care about choosing a location for "photo.png",
-    and about deleting it at the end.
-    Context classes allow to handle the temporal storage and removal, and would
-    be used like this:
-
-    with Jpg2Png("photo.jpg") as tmp_png_file:
-        do_whatever(tmp_png_file)...
-
-    Here tmp_png_file would be a pathname refering to a .png file created from
-    our "photo.jpg". We can use this pathname to open it, copy it, process it,
-    etc. without taking care of where it is. Also, once we exit the 'with'
-    block it will be deleted and we won't have to care about it anymore.
+    Creates a context class, which implements the functionality provided
+    by the function core_function.
+    Inputs:
+        - core_function: a function with the following restrictions.
+            + it must take AT LEAST 2 arguments
+            + the first argument is an input file to be processed
+            + the second argument is the output file
+        - output_extension: sometimes the output file of a process must have
+                            a given extension. You can specify it here.
+                            output_extension can be:
+                    a) A string specifying the extension (with dot, eg. ".jpg")
+                    b) A function that given the input file name, produces the
+                       extension. Example: lambda file: file.split('.')[-1]
     """
+
+    def get_extension(f_in):
+        if hasattr(output_extension, '__call__'):
+            return output_extension(f_in)
+        return output_extension
 
     # This is our mold of Context Class :)
     class GenericContextClass(TempFileContext):
@@ -74,7 +64,7 @@ def create_context_class(core_function, output_extension=""):
         def __init__(self, *args, **kwargs):
             self.removable_files = []
 
-            self.tempfile = tempfile.mktemp() + "." + output_extension
+            self.tempfile = tempfile.mktemp() + get_extension(args[0])
             core_function(args[0], self.tempfile, *args[1:], **kwargs)
             self.remove_at_exit = True
 

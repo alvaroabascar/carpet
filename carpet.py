@@ -60,21 +60,30 @@ def create_context_class(core_function, output_extension=""):
             return output_extension(f_in)
         return output_extension
 
-    # This is our mold of Context Class :)
-    class GenericContextClass(TempFileContext):
+    # This is the init of our new  Context Class
 
-        def __init__(self, *args, **kwargs):
-            if 'remove_at_exit' in kwargs:
-                self.remove_at_exit = kwargs['remove_at_exit']
-                kwargs.pop('remove_at_exit', None)
-            else:
-                self.remove_at_exit = True
-            self.removable_files = []
+    def init(self, file_in, *args, **kwargs):
+        if 'remove_at_exit' in kwargs:
+            self.remove_at_exit = kwargs['remove_at_exit']
+            kwargs.pop('remove_at_exit', None)
+        else:
+            self.remove_at_exit = True
+        self.removable_files = []
 
-            extension = get_extension(args[0])
-            if extension:
-                extension = "." + extension
-            self.tempfile = tempfile.mktemp() + extension
-            core_function(args[0], self.tempfile, *args[1:], **kwargs)
+        extension = get_extension(file_in)
+        if extension:
+            extension = "." + extension
+        self.tempfile = tempfile.mktemp() + extension
+        core_function(file_in, self.tempfile, *args, **kwargs)
 
+    class_docstring = "This is the documentation from the core function.\n\
+    Remind that when instantiating this class you can use the same arguments EXCEPT\n\
+    the output file.\n{}".format(core_function.__doc__)
+
+    dic = {
+            '__init__': init,
+            '__doc__': class_docstring
+            }
+    class_name = core_function.__name__.capitalize()
+    GenericContextClass = type(class_name, (TempFileContext,), dic)
     return GenericContextClass

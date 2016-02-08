@@ -5,3 +5,7 @@ htmlcov/
 test/.coverage
 test/htmlcov/
 test/run_tests.sh
+build/
+carpet.egg-info/
+dist/
+

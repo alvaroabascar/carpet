@@ -1,5 +1,5 @@
 # carpet
-Clarify your pipelines, hiding your temporal files behind the carpet!
+Clarify your pipelines, hiding your temporal files under the carpet!
 
 
 ### What?

@@ -8,4 +8,5 @@ test/run_tests.sh
 build/
 carpet.egg-info/
 dist/
-
+setup.cfg
+update.sh

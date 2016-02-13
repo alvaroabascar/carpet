@@ -4,7 +4,7 @@ Clarify your pipelines, hiding your temporal files under the carpet!
 ### Install
 
 ```python
-pip install carpet
+pip3 install carpet
 ```
 
 ### What?
@@ -43,6 +43,8 @@ def transform(file_in, file_out, arg1, arg2, ...):
     ...
     ...
     produce file_out
+
+from carpet import create_context_class
 
 Transform = create_context_class(transform)
 ```

@@ -1,6 +1,11 @@
 # carpet
 Clarify your pipelines, hiding your temporal files under the carpet!
 
+### Install
+
+```python
+pip install carpet
+```
 
 ### What?
 

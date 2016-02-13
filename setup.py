@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
         name="carpet",
-        version="0.0.2",
+        version="0.0.3",
         url="https://github.com/alvaroabascar/carpet",
         license='MIT',
         author="Álvaro Abella",

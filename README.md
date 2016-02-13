@@ -37,16 +37,21 @@ def transform(file_in, file_out, arg1, arg2, ...):
     ...
     ...
     ...
-    (finally produces file_out)
+    produce file_out
 
 Transform = create_context_class(transform)
 ```
 
-And here is our transform function :)
+And here is our transform function :):
+
+```python
+with Transform(file_in, arg1, arg2, ...) as transformed_file:
+    do_whatever(transformed_file)
+```
 
 ### What kind of functions can I transform into a Context Class?
 
 These are the restrictions for the function:
 
-    - it must take at least two arguments (it can take more)
-    - the second argument must be the output file
+    - It must take at least two arguments (it can take more).
+    - The second argument must be the output file.

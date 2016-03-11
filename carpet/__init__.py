@@ -1,7 +1,7 @@
 import tempfile
 import os
 
-class TempFileContext:
+class TempFileContext(object):
     remove_at_exit = True
     removable_files = []
 
